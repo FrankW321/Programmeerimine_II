@@ -33,7 +33,7 @@ db.on('error', function(err){
 const app = express();
 
 //bring in models
-let Article = require('./models/article');
+let Product = require('./models/product');
 
 //load view engine
 app.set('views', path.join(__dirname, 'views'));
@@ -93,22 +93,22 @@ app.get('*', function(req, res, next){
 
 //home route
 app.get('/', function(req, res){
-  Article.find({}, function(err, articles){
+  Product.find({}, function(err, products){
     if(err){
       console.log(err);
     } else {
       res.render('index', {
-        title:'Articles',
-        articles: articles
+        title:'Products',
+        products: products
       });
     }
   });
 });
 
 //route files
-let articles = require('./routes/articles');
+let products = require('./routes/products');
 let users = require('./routes/users');
-app.use('/articles', articles);
+app.use('/products', products);
 app.use('/users', users);
 
 //start server

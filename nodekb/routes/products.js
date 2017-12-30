@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-//bring in article model
-let Article = require('../models/article');
+//bring in product model
+let Product = require('../models/product');
 //user model
 let User = require('../models/user');
 //add route
 router.get('/add', ensureAuthenticated, function(req, res){
-  res.render('add_article', {
-    title:'Add Article'
+  res.render('add_product', {
+    title:'Add Product'
   });
 });
 
@@ -22,22 +22,22 @@ router.post('/add', function(req, res){
   let errors = req.validationErrors()
 
   if(errors){
-    res.render('add_article', {
-      title:'Add Article',
+    res.render('add_product', {
+      title:'Add Product',
       errors:errors
     });
   } else {
-    let article = new Article();
-    article.title = req.body.title;
-    article.author = req.user._id;
-    article.body = req.body.body;
+    let product = new Product();
+    product.title = req.body.title;
+    product.author = req.user._id;
+    product.body = req.body.body;
 
-    article.save(function(err){
+    product.save(function(err){
       if(err){
         console.log(err);
         return;
       } else {
-        req.flash('success', 'Article Added');
+        req.flash('success', 'Product Added');
         res.redirect('/');
       }
     });
@@ -46,38 +46,38 @@ router.post('/add', function(req, res){
 
 //load edit form
 router.get('/edit/:id', ensureAuthenticated, function(req, res) {
-  Article.findById(req.params.id, function(err, article){
-    if(article.author != req.user._id){
+  Product.findById(req.params.id, function(err, product){
+    if(product.author != req.user._id){
       req.flash('danger', 'Not Authorized');
       req.redirect('/');
     }
-    res.render('edit_article', {
-      title:'Edit Article',
-      article:article
+    res.render('edit_product', {
+      title:'Edit Product',
+      product:product
     });
   });
 });
 //update submit post
 router.post('/edit/:id', function(req, res){
-  let article = {};
-  article.title = req.body.title;
-  article.author = req.body.author;
-  article.body = req.body.body;
+  let product = {};
+  product.title = req.body.title;
+  product.author = req.body.author;
+  product.body = req.body.body;
 
 let query = {_id:req.params.id}
 
-  Article.update(query, article, function(err){
+  Product.update(query, product, function(err){
     if(err){
       console.log(err);
       return;
     } else {
-      req.flash('success','Article Updated');
+      req.flash('success','Product Updated');
       res.redirect('/');
     }
   });
 });
 
-//delte article
+//delte product
 router.delete('/:id', function(req, res){
   if(!req.user._id){
     res.status(500).send();
@@ -85,11 +85,11 @@ router.delete('/:id', function(req, res){
 
   let query = {_id:req.params.id}
 
-  Article.findById(req.params.id, function(err, article){
-    if(article.author != req.user._id){
+  Product.findById(req.params.id, function(err, product){
+    if(product.author != req.user._id){
       res.status(500).send();
     } else {
-      Article.remove(query, function(err){
+      Product.remove(query, function(err){
         if(err){
           console.log(err);
         }
@@ -99,12 +99,12 @@ router.delete('/:id', function(req, res){
   });
 });
 
-//get single article
+//get single product
 router.get('/:id', function(req, res) {
-  Article.findById(req.params.id, function(err, article){
-    User.findById(article.author, function(err, user){
-      res.render('article', {
-        article:article,
+  Product.findById(req.params.id, function(err, product){
+    User.findById(product.author, function(err, user){
+      res.render('product', {
+        product:product,
         author:user.name
       });
     });

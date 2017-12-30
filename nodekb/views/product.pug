@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1=product.title
+  br
+  h5 Written by #{author}
+  br
+  p=product.body
+  br
+  if user
+    if user.id == product.author
+      a.btn.btn-default(href='/products/edit/'+product._id) Edit
+      a.btn.btn-danger.delete-product(href='#', data-id=product._id) Delete 
+  
