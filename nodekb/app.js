@@ -9,6 +9,8 @@ const session = require('express-session');
 const passport = require('passport');
 const config = require('./config/database');
 
+const multer  = require('multer')
+
 
 const dbConnectionOptions = {
   useMongoClient: true,
@@ -111,6 +113,94 @@ let users = require('./routes/users');
 app.use('/products', products);
 app.use('/users', users);
 
+//set storage engine
+
+const storage = multer.diskStorage({
+  destination: './public/uploads/',
+  filename: function(req, file, cb){
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+
+//init upload
+const upload = multer({
+  storage:storage,
+  limits:{fileSize: 7000000},
+  fileFilter:function(req, file, cb){
+    checkFileType(file,cb);
+  }
+}).single('myImage');
+
+//check file type
+function checkFileType(file, cb){
+  //allowed ext
+  const filetypes = /jpeg|jpg|png|gif/;
+  //check ext
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  //check mime
+  const mimetype = filetypes.test(file.mimetype);
+
+  if(mimetype && extname){
+    return cb(null, true);
+  } else {
+    cb('Error: Images Only');
+  }
+}
+
+//pug
+app.set('view engine', 'pug');
+
+//public folder
+app.use(express.static('./public'));
+
+app.get('/', (req, res) => res.render('./views/edit_product.pug'));
+
+app.post('/upload', (req, res) =>{
+  upload(req, res, (err) => {
+    if(err){
+      res.render('./views/edit_product.pug',{
+        msg:err
+      });
+    } else {
+      if(req.file == undefined){
+        res.render('./views/edit_product.pug',{
+          msg:'Error: No File Selected'
+        });
+        } else {
+      res.render('./views/edit_product.pug', {
+        msg: 'File Uploaded!',
+        file: `uploads/${req.file.filename}`
+        });
+      }
+    }
+  });
+});
+
+//uploading pictures
+
+
+/*
+app.post('/profile', upload.single('avatar'), function (req, res, next) {
+  // req.file is the `avatar` file 
+  // req.body will hold the text fields, if there were any 
+})
+ 
+app.post('/photos/upload', upload.array('photos', 12), function (req, res, next) {
+  // req.files is array of `photos` files 
+  // req.body will contain the text fields, if there were any 
+})
+ 
+const cpUpload = upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'gallery', maxCount: 8 }])
+app.post('/cool-profile', cpUpload, function (req, res, next) {
+  // req.files is an object (String -> Array) where fieldname is the key, and the value is array of files 
+  // 
+  // e.g. 
+  //  req.files['avatar'][0] -> File 
+  //  req.files['gallery'] -> Array 
+  // 
+  // req.body will contain the text fields, if there were any 
+})
+*/
 //start server
 app.listen(3000, function(){
   console.log('Server started on port 3000');

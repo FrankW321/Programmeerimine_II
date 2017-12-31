@@ -13,5 +13,10 @@ block content
         label Body:
         textarea.form-control(name='body')=product.body
       br
-      input.btn.btn-primary(type='submit', value='Submit')
+      form(action='/upload', method='POST', enctype='multipart/form-data')
+        input.btn.btn-primary(name='myImage', type='file', value='Add Picture')
+        br
+        br
+        input.btn.btn-primary(type='submit', value='Submit')
+        <!-- img.image(src='file') >
         
