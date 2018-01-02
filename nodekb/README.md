@@ -1,13 +1,13 @@
 # E-Store
 
 ### Technologies
-Node.js
-Express
-Express Messages, Session, Connect Flash and Validation
-MongoDB and Mongoose
-Pug templating
-Passport.js Authentication
-BCrypt Hashing
+* Node.js
+* Express
+* Express Messages, Session, Connect Flash & Validation
+* MongoDB & Mongoose
+* Pug Templating
+* Passport.js Authentication
+* BCrypt Hashing
 
 ## Usage
 
